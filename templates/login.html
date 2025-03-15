@@ -1,11 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/login.css') }}">
+
 </head>
+
 <body>
-    
+    <form action="POST">
+        <input type ="text" id ="username" placeholder="ユーザー名を入力して下さい">
+        <input type ="text" id ="password" placeholder="パスワードを入力して下さい">
+    </form>
+
 </body>
+
 </html>
