@@ -9,6 +9,7 @@ app.register_blueprint(header_bp, url_prefix='/header')
 app.register_blueprint(footer_bp, url_prefix='/footer')
 
 @app.route("/")
+@login_required
 def index():
     age = 29
     name = "Taro"
