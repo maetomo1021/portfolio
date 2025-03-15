@@ -11,9 +11,14 @@
 </head>
 
 <body>
-    <form action="POST">
-        <input type ="text" id ="username" placeholder="ユーザー名を入力して下さい">
-        <input type ="text" id ="password" placeholder="パスワードを入力して下さい">
+    <form method="POST">
+        <label>メールアドレス</label>
+        <input type="email" name="email" required>
+
+        <label>パスワード</label>
+        <input type="password" name="password" required>
+
+        <button type="submit">ログイン</button>
     </form>
 
 </body>
