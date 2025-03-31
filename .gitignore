@@ -1,2 +1,5 @@
 __init__.cpython-311.pyc
 app.cpython-311.pyc
+__pycache__/app.cpython-311.pyc
+blueprints/auth/__pycache__/routes.cpython-311.pyc
+blueprints/auth/__pycache__/routes.cpython-311.pyc

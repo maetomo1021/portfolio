@@ -1,6 +1,15 @@
 body {}
 
-
-header {
+header,
+footer {
     background-color: #343A40;
+}
+
+.header-menu {
+    width: auto;
+    display: flex;
+    justify-content: space-between;
+    list-style: none;
+    background-color: rgba(194, 215, 194, 0.222);
+    margin: auto;
 }
