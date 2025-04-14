@@ -4,6 +4,13 @@ from portfolio.models import db, bcrypt, User
 from portfolio.blueprints.auth import auth_bp
 from portfolio.blueprints.header import header_bp
 from portfolio.blueprints.footer import footer_bp
+from dotenv import load_dotenv
+import os
+
+###APIキー読み込み###
+from pathlib import Path
+env_path = Path(../)
+
 
 app = Flask(__name__, template_folder="templates")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -29,6 +36,7 @@ app.register_blueprint(header_bp, url_prefix='/')
 app.register_blueprint(footer_bp, url_prefix='/')
 
 
+# app = Flask(__name__)
 @app.route("/")
 @login_required
 def index():
