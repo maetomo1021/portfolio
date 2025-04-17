@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ルート検索 - 現在地から目的地</title>
+  <style>
+    #map {
+      height: 500px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>現在地から目的地へのルート検索</h2>
+  
+  <!-- 目的地入力フォーム -->
+  <input type="text" id="destination" placeholder="目的地を入力">
+  <button onclick="searchRoute()">ルート検索</button>
+
+  <!-- 地図表示 -->
+  <div id="map"></div>
+
+  <script>
+    let map;
+    let directionsService;
+    let directionsRenderer;
+    let userLocation;
+
+    // Google Maps APIの初期化
+    function initMap() {
+      // 地図の初期設定
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 35.6762, lng: 139.6503 }, // 初期位置（東京）
+        zoom: 12,
+      });
+
+      directionsService = new google.maps.DirectionsService();
+      directionsRenderer = new google.maps.DirectionsRenderer();
+      directionsRenderer.setMap(map);
+
+      // ユーザーの現在地を取得
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+
+          // ユーザーの現在地を地図の中心に設定
+          map.setCenter(userLocation);
+          console.log("現在地取得成功:", userLocation); // デバッグ用ログ
+        }, function(error) {
+          console.error("現在地取得エラー:", error); // デバッグ用ログ
+          alert("現在地を取得できませんでした。");
+        });
+      } else {
+        alert("このブラウザではGeolocationがサポートされていません。");
+      }
+    }
+
+    // ルート検索
+    function searchRoute() {
+      // 現在地が取得されていない場合は、処理を中断
+      if (!userLocation) {
+        alert("現在地を取得するまでお待ちください。");
+        return;
+      }
+
+      const destination = document.getElementById("destination").value;
+      console.log("目的地:", destination); // デバッグ用ログ
+
+      if (!destination) {
+        alert("目的地を入力してください。");
+        return;
+      }
+
+      const request = {
+        origin: userLocation,  // 現在地
+        destination: destination,  // 目的地
+        travelMode: google.maps.TravelMode.TRANSIT,  // 車での移動
+        unitSystem: google.maps.UnitSystem.METRIC,  // メートル法
+      };
+
+      // 経路検索を実行
+      directionsService.route(request, function(result, status) {
+        if (status === google.maps.DirectionsStatus.OK) {
+          // 結果を地図に表示
+          directionsRenderer.setDirections(result);
+        } else {
+          console.error("ルート検索エラー:", status); // デバッグ用ログ
+          alert("ルート検索に失敗しました：" + status);
+        }
+      });
+    }
+  </script>
+
+  <!-- Google Maps APIの読み込み -->
+<script async defer
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAQ5J6jKpSXGWUa0U3CfxFKNAjlNrkiVv8&libraries=directions&callback=initMap">
+</script>
+
+
+</body>
+</html>

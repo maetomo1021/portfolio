@@ -13,23 +13,19 @@
 
 <body>
     <div class="container">
-        <h2>ユーザー登録</h2>
-
+        <h2>新規登録</h2>
         <form method="POST">
-            <div class="mb-3">
-                <label for="name" class="form-label">ユーザー名:</label>
-                <input type="text" class="form-control" id="name" name="username" required>
-            </div>
-            <div class="mb-3">
-                <label for="email" class="form-label">メールアドレス:</label>
-                <input type="email" name="email"class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label for="message" class="form-label">パスワード:</label>
-                <input type="password" class="form-control" name="password" rows="5" required>
-            </div>
-            <button type="submit" class="btn btn-primary">登録</button>
+            <input name="username" placeholder="ユーザー名"><br>
+            <input name="password" type="password" placeholder="パスワード"><br>
+            <input name="email" type="email" placeholder="メールアドレス"><br>
+            <input type="submit" value="登録">
         </form>
+        <p><a href="{{ url_for('auth.login') }}">ログイン画面へ</a></p>
+        {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+        {% endwith %}
         <a href="{{ url_for('auth.login') }}">すでにアカウントをお持ちですか？ログイン</a>
     </div>
 </body>

@@ -1,51 +1,28 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
-from portfolio.models import db, User, bcrypt
-from flask_login import login_user, logout_user, login_required
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+import sqlite3
+import os
 
-auth_bp = Blueprint("auth", __name__)  # Blueprint の名前を指定
+auth = Blueprint('auth', __name__)
 
-@auth_bp.route("/register", methods=["GET", "POST"])
-def register():
-    if request.method == "POST":
-        username = request.form.get("username")
-        email = request.form.get("email")
-        password = request.form.get("password")
-        
-        user = User.query.filter_by(email=email).first()
-        if user:
-            flash("そのメールアドレスは既に使用されています", "danger")
-        else:
-            new_user = User(username=username, email=email)
-            new_user.set_password(password)
-            db.session.add(new_user)
-            db.session.commit()
-            flash("登録完了！ログインしてください", "success")
-            return redirect(url_for("auth.login"))
-    return render_template("register.html")
+DB_PATH = os.path.join(os.path.dirname(__file__), 'database.db')
 
-
-@auth_bp.route('/login', methods=['GET', 'POST'])
+@auth.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form['email']
+        username = request.form['username']
         password = request.form['password']
 
-        # ユーザー情報をデータベースから取得
-        user = User.query.filter_by(email=email).first()
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
+        user = c.fetchone()
+        conn.close()
 
-        if user and user.check_password(password):  # パスワードが正しいか確認
-            login_user(user)
-            flash('ログイン成功', 'success')
-            return redirect(url_for('index'))  # ホーム画面へ
+        if user:
+            session['user_id'] = user[0]
+            flash('ログイン成功')
+            return redirect(url_for('views1.home'))  # 例：homeにリダイレクト
         else:
-            flash('メールアドレスまたはパスワードが間違っています', 'danger')
+            flash('ログイン失敗')
 
     return render_template('login.html')
-
-
-@auth_bp.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    flash('ログアウトしました', 'info')
-    return redirect(url_for('auth.login'))  # ログインページへ戻る

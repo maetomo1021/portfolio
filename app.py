@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_login import LoginManager, login_required
 from portfolio.models import db, bcrypt, User
 from portfolio.blueprints.auth import auth_bp
@@ -9,8 +9,7 @@ import os
 
 ###APIキー読み込み###
 from pathlib import Path
-env_path = Path(../)
-
+# env_path = Path()
 
 app = Flask(__name__, template_folder="templates")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -43,6 +42,11 @@ def index():
     age = 29
     name = "Taro"
     return render_template("index.html", age=age, name=name)
+
+@app.route("/search_root")
+@login_required
+def search_root():
+    return render_template("search_root.html")
 
 @app.route("/login")
 def login():

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>現在地の地図表示</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 30px; }
+    #map { margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+  <h2>現在地を地図で表示</h2>
+  <button onclick="getLocation()">位置情報を取得</button>
+
+  <div id="result"></div>
+  <div id="map"></div>
+
+  <script>
+    const apiKey = "AIzaSyAQ5J6jKpSXGWUa0U3CfxFKNAjlNrkiVv8";  // ← ここにあなたのAPIキーを入れて！
+
+    function getLocation() {
+      const resultDiv = document.getElementById("result");
+      const mapDiv = document.getElementById("map");
+
+      if (!navigator.geolocation) {
+        resultDiv.textContent = "このブラウザでは位置情報がサポートされていません。";
+        return;
+      }
+
+      resultDiv.textContent = "位置情報を取得中...";
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          resultDiv.innerHTML = `緯度: ${lat}<br>経度: ${lon}`;
+
+          const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lon}&zoom=15&size=600x300&markers=color:red%7C${lat},${lon}&key=${apiKey}`;
+          mapDiv.innerHTML = `<img src="${mapUrl}" alt="現在地の地図">`;
+        },
+        (error) => {
+          resultDiv.textContent = "位置情報の取得に失敗しました。";
+        }
+      );
+    }
+  </script>
+
+</body>
+</html>

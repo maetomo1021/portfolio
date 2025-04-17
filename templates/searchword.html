@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>温泉検索マップ</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 20px; }
+    #map { height: 500px; width: 100%; margin-top: 20px; }
+    input {
+      width: 300px;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>全国の温泉を検索しよう</h2>
+  <input type="text" id="searchInput" placeholder="温泉名や地域を入力（例：箱根温泉）">
+  <button onclick="searchOnsen()">検索</button>
+
+  <div id="map"></div>
+
+  <script>
+    let map;
+    let service;
+    let markers = [];
+
+    // Google Maps APIの読み込み完了後に実行
+    function initMap() {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 36.2048, lng: 138.2529 },
+        zoom: 3,
+      });
+
+      service = new google.maps.places.PlacesService(map); // サービスの初期化
+
+      console.log("地図とサービス初期化完了");
+    }
+
+    // 位置情報検索
+    function searchOnsen() {
+      if (!service) {
+        alert("地図がまだ初期化されていません。少し待ってください。");
+        return;
+      }
+
+      const query = document.getElementById("searchInput").value + " 温泉";
+
+      if (!query.trim()) return;
+
+      const request = {
+        query: query,
+        fields: ["name", "geometry"],
+      };
+
+      service.textSearch(request, (results, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          clearMarkers();
+
+          map.setCenter(results[0].geometry.location);
+          map.setZoom(12);
+
+          results.forEach(place => {
+            const marker = new google.maps.Marker({
+              map,
+              position: place.geometry.location,
+              title: place.name,
+            });
+            markers.push(marker);
+          });
+        } else {
+          alert("検索に失敗しました：" + status);
+        }
+      });
+    }
+
+    // マーカーのクリア
+    function clearMarkers() {
+      markers.forEach(marker => marker.setMap(null));
+      markers = [];
+    }
+
+    // ページ読み込み完了時に地図初期化
+    window.onload = function() {
+      // Google Maps APIをロードしたタイミングでinitMap()を呼び出す
+      const script = document.createElement("script");
+      script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyAQ5J6jKpSXGWUa0U3CfxFKNAjlNrkiVv8&libraries=places&callback=initMap";
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
+    }
+  </script>
+
+</body>
+</html>
