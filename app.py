@@ -11,10 +11,17 @@ import os
 from pathlib import Path
 # env_path = Path()
 
+load_dotenv()
+
 app = Flask(__name__, template_folder="templates")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['GOOGLE_MAPS_API_KEY'] = os.getenv('GOOGLE_MAPS_API_KEY')
 app.config['SECRET_KEY'] = 'maetomo1021'  # セッション用の秘密キー
 
+# 全テンプレートに共通の変数を渡す（Flaskのcontext_processorを使う）
+@app.context_processor
+def inject_api_key():
+    return dict(api_key=app.config['GOOGLE_MAPS_API_KEY'])
 
 # すでに定義済みの db と bcrypt を初期化
 db.init_app(app)

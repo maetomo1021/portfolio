@@ -1,13 +1,22 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <title>現在地の地図表示</title>
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 30px; }
-    #map { margin-top: 20px; }
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 30px;
+    }
+
+    #map {
+      margin-top: 20px;
+    }
   </style>
 </head>
+
 <body>
 
   <h2>現在地を地図で表示</h2>
@@ -17,7 +26,7 @@
   <div id="map"></div>
 
   <script>
-    const apiKey = "AIzaSyAQ5J6jKpSXGWUa0U3CfxFKNAjlNrkiVv8";  // ← ここにあなたのAPIキーを入れて！
+    const apiKey = "{{ api_key }}";  // ← Flaskから受け取る
 
     function getLocation() {
       const resultDiv = document.getElementById("result");
@@ -47,4 +56,5 @@
   </script>
 
 </body>
+
 </html>
