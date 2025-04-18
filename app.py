@@ -1,63 +1,39 @@
-from flask import Flask, render_template, redirect, url_for, request, flash
-from flask_login import LoginManager, login_required
+from flask import Flask,render_template
+from flask_login import LoginManager
 from portfolio.models import db, bcrypt, User
 from portfolio.blueprints.auth import auth_bp
-from portfolio.blueprints.header import header_bp
-from portfolio.blueprints.footer import footer_bp
+from portfolio.blueprints.header.routes import header_bp
+from portfolio.blueprints.footer.routes import footer_bp
 from dotenv import load_dotenv
 import os
 
-###APIキー読み込み###
-from pathlib import Path
-# env_path = Path()
-
 load_dotenv()
 
-app = Flask(__name__, template_folder="templates")
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-app.config['GOOGLE_MAPS_API_KEY'] = os.getenv('GOOGLE_MAPS_API_KEY')
-app.config['SECRET_KEY'] = 'maetomo1021'  # セッション用の秘密キー
+app = Flask(__name__)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(BASE_DIR, 'database.db')}"
 
-# 全テンプレートに共通の変数を渡す（Flaskのcontext_processorを使う）
-@app.context_processor
-def inject_api_key():
-    return dict(api_key=app.config['GOOGLE_MAPS_API_KEY'])
 
-# すでに定義済みの db と bcrypt を初期化
 db.init_app(app)
 bcrypt.init_app(app)
 
-# Flask-Login のセットアップ
 login_manager = LoginManager()
+login_manager.login_view = 'auth.login'
 login_manager.init_app(app)
-login_manager.login_view = "auth.login"  # ログインが必要なページでリダイレクトする先
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# Blueprint を登録
-app.register_blueprint(auth_bp, url_prefix='/auth') 
-app.register_blueprint(header_bp, url_prefix='/')
-app.register_blueprint(footer_bp, url_prefix='/')
+app.register_blueprint(auth_bp, url_prefix='/auth')
+app.register_blueprint(header_bp)
+app.register_blueprint(footer_bp)
 
-
-# app = Flask(__name__)
 @app.route("/")
-@login_required
 def index():
-    age = 29
-    name = "Taro"
-    return render_template("index.html", age=age, name=name)
+    return render_template("index.html")
 
-@app.route("/search_root")
-@login_required
-def search_root():
-    return render_template("search_root.html")
 
-@app.route("/login")
-def login():
-    return render_template("login.html")
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=4940, debug=True)
