@@ -13,12 +13,12 @@
 
 <body>
     <div class="container">
-        <h2>新規登録</h2>
+        <h2 class="text-center mb-4">新規登録</h2>
         <form method="POST">
-            <input name="username" placeholder="ユーザー名"><br>
-            <input name="password" type="password" placeholder="パスワード"><br>
-            <input name="email" type="email" placeholder="メールアドレス"><br>
-            <input type="submit" value="登録">
+            <input name="username" placeholder="ユーザー名"class="w-50 mx-auto"><br>
+            <input name="password" type="password" placeholder="パスワード"class="w-50 mx-auto"><br>
+            <input name="email" type="email" placeholder="メールアドレス"class="w-50 mx-auto"><br>
+            <input type="submit" value="登録"class="d-grid">
         </form>
         <p><a href="{{ url_for('auth.login') }}">ログイン画面へ</a></p>
         {% with messages = get_flashed_messages() %}

@@ -25,18 +25,21 @@ def register():
     return render_template('register.html')
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
-@login_required
 def login():
     if request.method == 'POST':
-        username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(email=email).first()
+
         if user and user.check_password(password):
             login_user(user)
-            return redirect(url_for('header.header'))  # headerのトップページ想定
-        flash("ユーザー名またはパスワードが違います")
+            flash("ログイン成功！", "success")
+            return redirect(url_for('header.index'))  # ← ここで index.html に飛ばす！
+        else:
+            flash("ログインメールまたはパスワードが異なります", "danger")
 
     return render_template('login.html')
+
 
 @auth_bp.route('/logout')
 @login_required
@@ -44,5 +47,3 @@ def logout():
     logout_user()
     flash("ログアウトしました")
     return redirect(url_for('auth.login'))
-
-

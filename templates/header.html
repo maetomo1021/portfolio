@@ -6,17 +6,13 @@
         integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
         crossorigin="anonymous"></script>
 
-    <div>
-        <div>
-            <h1>飲食店共有サイト</h1>
-        </div>
-
-        <div class ="header-menu">
-            <li>ホーム</li>
-            <li>サービス</li>
-            <li>企業理念</li>
-            <li>テスト</li>
-            <li>テスト</li>
-        </div>
-    </div>
+    <h1>トラベル🛩サポート</h1>
+    <ul class="header-menu">
+        <li><a href="{{ url_for('header.index') }}">🏠 ホーム</a></li>
+        <li><a href="{{ url_for('header.search_root') }}">♨️ 温泉</a></li>
+        <li><a href="#">🍽️ 飲食店</a></li>
+        <li><a href="#">🏃‍♂️ 運動</a></li>
+        <li><a href="#">📝 掲示板</a></li>
+        <li><a href="{{ url_for('header.search_root') }}">ℚ 問い合わせ</a></li>
+    </ul>
 </header>
