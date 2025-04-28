@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zenrin Maps Route Optimization</title>
+    <link rel="stylesheet" href="static/style.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <script src="	https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js
+    "></script>
+    <script
+        src="https://test-js.zmaps-api.com/zma_loader.js?key=AIzaSyCSTefxrBPlTQuUdpG9rwdGkQ_WaVcUk_M&auth=ip"></script>
+</head>
+
+<body>
+    <h1>自動車ルート検索2.0(最適巡回考慮)</h1>
+
+    <div id="info">
+        <div id="ZMap"></div>
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                所要時間 ➡
+                <span class="badge text-bg-primary rounded-pill" id="time"></span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                距離 ➡
+                <span class="badge text-bg-primary rounded-pill" id="dist"></span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                交通費 ➡
+                <span class="badge text-bg-primary rounded-pill" id="cost"></span>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        // マップオブジェクトと中心座標の設定
+        var map;
+
+        // 経由地の座標をカンマ区切りの文字列で定義
+        // 東京ディズニーランド、東京スカイツリー、チームラボプラネッツ TOKYO DMM
+        let waypointString =
+            "139.88065756898112,35.63348601313571,139.81071112543816,35.71017592344799,139.79020303245483,35.64924265760604";
+
+        // ルート情報（所要時間と距離）を表示する関数
+        function showRouteInfo(rawDuration, rawDistance, tolltax) {
+            const costInfoArea = document.getElementById("cost");
+
+            convertTime(rawDuration);
+            convertDtn(rawDistance);
+
+            costInfoArea.textContent = `${tolltax} 円`;
+        }
+
+        // 経由地にマーカーを表示する関数
+        function showMarker(waypoints) {
+            waypoints.forEach((location, index) => {
+                const marker = new ZDC.Marker(new ZDC.LatLng(location.lat, location.lng), {
+                    styleId: ZDC.MARKER_COLOR_ID_RED_L,
+                    contentStyleId: ZDC[`MARKER_NUMBER_ID_${index + 1}_L`],
+                });
+                map.addWidget(marker);
+            });
+        }
+
+        // 経由地の文字列を解析し、最適化された順序で配列を返す関数
+        function parseWaypoints(waypointString, origin, destination, routeorder) {
+            const coordinates = waypointString.split(",").map(Number);
+            const waypoints = [origin];
+
+            for (let i = 0; i < coordinates.length; i += 2) {
+                const lng = coordinates[i];
+                const lat = coordinates[i + 1];
+                waypoints.push(new ZDC.LatLng(lat, lng));
+            }
+            optWaypts = waypointOpt(waypoints, routeorder);
+            optWaypts.push(destination);
+            return optWaypts;
+        }
+
+        // 経由地の順序を最適化する関数
+        function waypointOpt(waypoints, routeorder) {
+            let stringArray = routeorder.split(",");
+            let integerArray = stringArray.map((num) => parseInt(num, 10));
+            integerArray = [0, ...integerArray];
+            const optWaypts = [];
+            for (let i = 0; i < integerArray.length; i++) {
+                optWaypts.push(waypoints[integerArray[i]]);
+            }
+            return optWaypts;
+        }
+
+        // 所要時間を適切な形式で表示する関数
+        function convertTime(rawDuration) {
+            const timeInfoArea = document.getElementById("time");
+            if (timeInfoArea) {
+                const hours = Math.floor(rawDuration / 60);
+                const minutes = (rawDuration % 60).toFixed(0);
+
+                if (hours === 0 && minutes > 0) {
+                    timeInfoArea.textContent = `${minutes}分`;
+                } else if (hours > 0 && minutes === 0) {
+                    timeInfoArea.textContent = `${hours}時間`;
+                } else if (hours > 0 && minutes > 0) {
+                    timeInfoArea.textContent = `${hours}時${minutes}分`;
+                } else {
+                    timeInfoArea.textContent = "すぐに到着します";
+                }
+            } else {
+                console.error("所要時間の表示エリアが見つかりません。");
+            }
+        }
+
+        // 距離をキロメートル単位で表示する関数
+        function convertDtn(rawDistance) {
+            const distInfoArea = document.getElementById("dist");
+            if (rawDistance && distInfoArea) {
+                const distanceInKm = (rawDistance / 1000).toFixed(1);
+                distInfoArea.textContent = `${distanceInKm} km`;
+            } else {
+                console.error("距離の表示エリアが見つかりません。");
+            }
+        }
+
+        // ルート検索を実行する関数
+        function calculate_route(origin, destination, response) {
+            console.log(response);
+            const route = response.result.item[0].route;
+            const coordinates = route.link.flatMap((link) =>
+                link.line.coordinates.map((coord) => new ZDC.LatLng(coord[1], coord[0]))
+            );
+
+            const bounds = calculatePolylineBounds(coordinates);
+            if (bounds) {
+                const adjustZoom = map.getAdjustZoom(coordinates, { fix: false });
+                map.setCenter(adjustZoom.center);
+                map.setZoom(adjustZoom.zoom - 0.5);
+            }
+
+            const routeorder = route.waypoint_order;
+            const rawDuration = route.time;
+            const rawDistance = route.distance;
+            const tollTax = route.toll;
+            const waypoints = parseWaypoints(
+                waypointString,
+                origin,
+                destination,
+                routeorder
+            );
+            showMarker(waypoints);
+            showRouteInfo(rawDuration, rawDistance, tollTax);
+
+            const polyline = new ZDC.Polyline(coordinates, {
+                color: "red",
+                width: 4,
+                pattern: "solid",
+                opacity: 1,
+            });
+            map.addWidget(polyline);
+        }
+
+        // Function to calculate the bounds of a polyline
+        function calculatePolylineBounds(polylineCoordinates) {
+            if (!polylineCoordinates || polylineCoordinates.length === 0) {
+                console.log("ポリラインの座標が無効です。");
+            }
+
+            let minLat = Number.POSITIVE_INFINITY;
+            let maxLat = Number.NEGATIVE_INFINITY;
+            let minLng = Number.POSITIVE_INFINITY;
+            let maxLng = Number.NEGATIVE_INFINITY;
+
+            polylineCoordinates.forEach((point) => {
+                if (point.lat < minLat) minLat = point.lat;
+                if (point.lat > maxLat) maxLat = point.lat;
+                if (point.lng < minLng) minLng = point.lng;
+                if (point.lng > maxLng) maxLng = point.lng;
+            });
+
+            const southWest = new ZDC.LatLng(minLat, minLng);
+            const northEast = new ZDC.LatLng(maxLat, maxLng);
+            const bounds = new ZDC.LatLngBounds(southWest, northEast);
+
+            return bounds;
+        }
+
+        async function getResponse() {
+            try {
+                const response = await fetch("/static/data.json");
+                if (!response.ok) {
+                    throw new Error(`HTTP エラーステータス: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error("Json 取得エラー:", error.message);
+                // Handle the error appropriately
+                return null; // Return null or handle as needed
+            }
+        }
+
+        ZMALoader.setOnLoad(async function (mapOptions, error) {
+            if (error) {
+                console.error(error);
+                return;
+            }
+            mapOptions.centerZoom = false;
+            mapOptions.mouseWheelReverseZoom = true;
+            mapOptions.minZoom = 4.5;
+
+            map = new ZDC.Map(
+                document.getElementById("ZMap"),
+                mapOptions,
+                async function () {
+                    const origin = new ZDC.LatLng(35.690881942542795, 139.6996382651929); // 新宿駅
+                    const destination = new ZDC.LatLng(
+                        35.658711231010265,
+                        139.74543289660156
+                    ); // 東京タワー
+
+                    const data = await getResponse();
+                    if (data) {
+                        calculate_route(origin, destination, data);
+                    } else {
+                        console.error("レスポンスデータの取得に失敗しました。");
+                    }
+
+                    map.addControl(new ZDC.ZoomButton("bottom-left"));
+                    map.addControl(new ZDC.Compass("top-right"));
+                    map.addControl(new ZDC.ScaleBar("bottom-left"));
+                },
+                function () {
+                    console.log("APIエラー");
+                }
+            );
+        });
+
+
+
+    </script>
+</body>
+
+</html>

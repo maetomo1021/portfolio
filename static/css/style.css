@@ -94,3 +94,7 @@ input.pac-target-input {
 .pac-container {
     z-index: 2000 !important;
 }
+#map {
+    height: 500px;
+    width: 100%;
+}

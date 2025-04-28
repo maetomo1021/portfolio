@@ -12,4 +12,9 @@ def index():
 @header_bp.route('/searchroot')
 @login_required
 def search_root():
-    return render_template('searchroot.html')  # ファイル名に合わせて！
+    return render_template('searchroot.html', api_key=os.getenv("GOOGLE_MAPS_API_KEY"))  # ファイル名に合わせて！
+
+@header_bp.route('/meeting')
+@login_required
+def meeting():
+    return render_template('meeting.html', api_key=os.getenv("GOOGLE_MAPS_API_KEY"))
