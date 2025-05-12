@@ -7,7 +7,8 @@ header_bp = Blueprint('header', __name__, template_folder='templates')
 @header_bp.route('/index')
 @login_required
 def index():
-    return render_template('index.html')
+    return render_template('index.html', api_key=os.getenv("GOOGLE_MAPS_API_KEY"))
+
 
 @header_bp.route('/searchroot')
 @login_required

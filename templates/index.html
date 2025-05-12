@@ -9,6 +9,18 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places"></script>
+    <!-- <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places&callback=initMap" async defer></script> -->
+    
+    <style>
+        #results {
+            display: none;
+            margin-top: 2rem;
+        }
+        .result-option {
+            margin-bottom: 1rem;
+        }
+    </style>
 </head>
 
 <body class="container py-5">
@@ -17,11 +29,11 @@
     <div class="container mt-5">
         <h2 class="text-center mb-4">待ち合わせ場所検索</h2>
 
-        <form class="card p-4 shadow-sm">
+        <form class="card p-4 shadow-sm" onsubmit="event.preventDefault(); searchRoutes();">
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="from" class="form-label fw-bold">出発</label>
-                    <input type="text" class="form-control" id="from" placeholder="駅、バス停など">
+                    <input type="text" class="form-control" id="from" placeholder="現在地を取得中...">
                 </div>
                 <div class="col-md-6">
                     <label for="to" class="form-label fw-bold">到着</label>
@@ -30,41 +42,37 @@
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <div class="col-md-6">
-                        <label for="date" class="fw-bold">日付</label>
-                        <input type="date" id="date" class="form-control">
-                    </div>
+                    <label for="date" class="fw-bold">出発日付</label>
+                    <input type="date" id="date" class="form-control">
                 </div>
                 <div class="col-md-6">
-                    <label for="time" class="form-label fw-bold">時間</label>
-                    <input type="time" class="form-control time-select" id="time">
+                    <label for="time" class="form-label fw-bold">出発時間</label>
+                    <input type="time" class="form-control" id="time">
                 </div>
-                
             </div>
-
 
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label class="fw-bold">条件</label>
-                    <select class="form-select">
-                        <option>値段を優先する</option>
-                        <option>時間を優先する</option>
-                        <option>両方を総合的に優先する</option>
+                    <select class="form-select" id="priority">
+                        <option value="price">値段を優先する</option>
+                        <option value="time">時間を優先する</option>
+                        <option value="both">両方を総合的に優先する</option>
                     </select>
                 </div>
                 <div class="col-md-6">
                     <label class="fw-bold">手段</label>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" checked>
-                        <label class="form-check-label">電車</label>
+                        <input class="form-check-input" type="checkbox" id="transit" checked>
+                        <label class="form-check-label" for="transit">電車</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" checked>
-                        <label class="form-check-label">車</label>
+                        <input class="form-check-input" type="checkbox" id="driving" checked>
+                        <label class="form-check-label" for="driving">車</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox">
-                        <label class="form-check-label">徒歩</label>
+                        <input class="form-check-input" type="checkbox" id="walking">
+                        <label class="form-check-label" for="walking">徒歩</label>
                     </div>
                 </div>
             </div>
@@ -79,21 +87,77 @@
             </div>
             <div class="text-end mt-3">
                 <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">ログアウト</a>
-              </div>
-              
+            </div>
         </form>
+
+        <div id="results" class="card p-4 mt-4 shadow-sm">
+            <h4>検索結果（候補）：</h4>
+            <div id="routeOptions"></div>
+        </div>
     </div>
-    
+
+    <script>
+        let userLocation;
+
+        function getCurrentAddress(lat, lng) {
+            const geocoder = new google.maps.Geocoder();
+            const latlng = { lat: parseFloat(lat), lng: parseFloat(lng) };
+            geocoder.geocode({ location: latlng }, function(results, status) {
+                if (status === 'OK' && results[0]) {
+                    document.getElementById('from').value = results[0].formatted_address;
+                } else {
+                    document.getElementById('from').placeholder = '現在地取得失敗';
+                }
+            });
+        }
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        userLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        getCurrentAddress(userLocation.lat, userLocation.lng);
+                    },
+                    error => {
+                        console.error("現在地取得に失敗", error);
+                        document.getElementById('from').placeholder = '現在地取得失敗';
+                    }
+                );
+            }
+        }
+
+        window.onload = getLocation;
+
+        function searchRoutes() {
+            const from = document.getElementById('from').value;
+            const to = document.getElementById('to').value;
+            const routeOptions = document.getElementById('routeOptions');
+            routeOptions.innerHTML = '';
+            const modes = [];
+            if (document.getElementById('walking').checked) modes.push('WALKING');
+            if (document.getElementById('driving').checked) modes.push('DRIVING');
+            if (document.getElementById('transit').checked) modes.push('TRANSIT');
+
+            modes.forEach(mode => {
+                const div = document.createElement('div');
+                div.className = 'result-option';
+                div.innerText = `${mode} ルートを検索中...（仮表示）`;
+                routeOptions.appendChild(div);
+            });
+            document.getElementById('results').style.display = 'block';
+        }
+    </script>
+
     {% endblock %}
-
-
 
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% for category, message in messages %}
     <div class="alert alert-{{ category }} text-center mt-3">{{ message }}</div>
     {% endfor %}
     {% endwith %}
-      
 </body>
 
 </html>

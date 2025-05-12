@@ -41,6 +41,8 @@ def start_page():
     else:
         return redirect(url_for('auth.login'))  # 未ログインならログインページへ
     
+
+    
 # def api_check():
 #     if not GOOGLE_MAPS_API_KEY:
 #         raise ValueError("APIキーが見つかりません")
