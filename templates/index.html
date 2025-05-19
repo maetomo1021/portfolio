@@ -9,16 +9,22 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places"></script>
-    <!-- <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places&callback=initMap" async defer></script> -->
-    
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places,directions"></script>
+
     <style>
         #results {
             display: none;
             margin-top: 2rem;
         }
+
         .result-option {
             margin-bottom: 1rem;
+        }
+
+        #map {
+            height: 400px;
+            display: none;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -94,22 +100,27 @@
             <h4>検索結果（候補）：</h4>
             <div id="routeOptions"></div>
         </div>
+
+        <div id="map" class="card p-3 shadow-sm"></div>
     </div>
 
     <script>
+        let map;
+        let directionsRenderer;
+        let directionsService;
+        let storedResults = {};
         let userLocation;
 
-        function getCurrentAddress(lat, lng) {
-            const geocoder = new google.maps.Geocoder();
-            const latlng = { lat: parseFloat(lat), lng: parseFloat(lng) };
-            geocoder.geocode({ location: latlng }, function(results, status) {
-                if (status === 'OK' && results[0]) {
-                    document.getElementById('from').value = results[0].formatted_address;
-                } else {
-                    document.getElementById('from').placeholder = '現在地取得失敗';
-                }
+        window.onload = function () {
+            getLocation();
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 35.6812, lng: 139.7671 },
+                zoom: 13,
             });
-        }
+            directionsRenderer = new google.maps.DirectionsRenderer();
+            directionsRenderer.setMap(map);
+            directionsService = new google.maps.DirectionsService();
+        };
 
         function getLocation() {
             if (navigator.geolocation) {
@@ -129,7 +140,17 @@
             }
         }
 
-        window.onload = getLocation;
+        function getCurrentAddress(lat, lng) {
+            const geocoder = new google.maps.Geocoder();
+            const latlng = { lat: parseFloat(lat), lng: parseFloat(lng) };
+            geocoder.geocode({ location: latlng }, function (results, status) {
+                if (status === 'OK' && results[0]) {
+                    document.getElementById('from').value = results[0].formatted_address;
+                } else {
+                    document.getElementById('from').placeholder = '現在地取得失敗';
+                }
+            });
+        }
 
         function searchRoutes() {
             const from = document.getElementById('from').value;
@@ -142,12 +163,46 @@
             if (document.getElementById('transit').checked) modes.push('TRANSIT');
 
             modes.forEach(mode => {
-                const div = document.createElement('div');
-                div.className = 'result-option';
-                div.innerText = `${mode} ルートを検索中...（仮表示）`;
-                routeOptions.appendChild(div);
+                const request = {
+                    origin: from,
+                    destination: to,
+                    travelMode: google.maps.TravelMode[mode],
+                };
+
+                if (mode === 'TRANSIT') {
+                    request.transitOptions = {
+                        departureTime: new Date()
+                    };
+                }
+
+                directionsService.route(request, function (result, status) {
+                    const div = document.createElement('div');
+                    div.className = 'result-option';
+
+                    if (status === "OK") {
+                        const id = `${mode}_${Date.now()}`;
+                        storedResults[id] = result;
+
+                        div.innerHTML = `
+                            <strong>${mode}</strong> - 時間: ${result.routes[0].legs[0].duration.text}, 距離: ${result.routes[0].legs[0].distance.text}
+                            <br><a href="#" onclick="showStoredRoute('${id}')">ルートを表示</a>
+                        `;
+                    } else {
+                        div.innerHTML = `<strong>${mode}</strong> ルートの取得に失敗しました (${status})`;
+                    }
+
+                    routeOptions.appendChild(div);
+                    document.getElementById('results').style.display = 'block';
+                });
             });
-            document.getElementById('results').style.display = 'block';
+        }
+
+        function showStoredRoute(id) {
+            const result = storedResults[id];
+            if (result) {
+                document.getElementById("map").style.display = "block";
+                directionsRenderer.setDirections(result);
+            }
         }
     </script>
 
