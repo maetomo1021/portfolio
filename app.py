@@ -6,6 +6,7 @@ from portfolio.blueprints.header.routes import header_bp
 from portfolio.blueprints.footer.routes import footer_bp
 from dotenv import load_dotenv
 import os
+import re
 import json
 
 
@@ -40,13 +41,10 @@ def start_page():
         return redirect(url_for('header.index'))  # ✅ 正しいendpoint名
     else:
         return redirect(url_for('auth.login'))  # 未ログインならログインページへ
-    
-
-    
+        
 # def api_check():
 #     if not GOOGLE_MAPS_API_KEY:
 #         raise ValueError("APIキーが見つかりません")
-
 
 @app.route("/search_root")
 def search_root():
