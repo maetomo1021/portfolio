@@ -16,6 +16,12 @@ def index():
 def search_root():
     return render_template('searchroot.html', api_key=os.getenv("GOOGLE_MAPS_API_KEY"))  # ファイル名に合わせて！
 
+@header_bp.route('/restaurant')
+@login_required
+def restaurant():
+    return render_template('restaurant.html', api_key=os.getenv("GOOGLE_MAPS_API_KEY"))  # ファイル名に合わせて！
+
+
 @header_bp.route('/meeting')
 @login_required
 def meeting():

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link href="css/reset.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <script defer src="js/index.js"></script>
+</head>
+
+<body>
+  <nav>
+    <li>TOP</li>
+    <li>menu</li>
+    <li>region</li>
+    <li>event</li>
+  </nav>
+  <div class="main-asidecontents">
+    <div class="tab-lists">
+      <input type="tab-radio" name="tab_itemA" value="グルメ" class="input-box">
+      <input type="tab-radio" name="tab_itemB" value="観光スポット" class="input-box">
+      <input type="tab-radio" name="tab_itemC" value="温泉" class="input-box">
+      <input type="tab-radio" name="tab_itemD" value="趣味" class="input-box">
+    </div>
+
+
+    <div class="main-contents">
+      <aside>
+
+        <div class="aside-content1">
+          <h1 class="nyuuryoku">入力欄</h1>
+          <form method="POST" action="POST">
+            <p>地域：
+              <select id="category" name="category">
+                <option value="1">東京</option>
+                <option value="2">大阪</option>
+                <option value="3">千葉</option>
+                <option value="4">静岡</option>
+              </select>
+            </p>
+            <p>店名：<input type="text" name="name"></p>
+            <p>備考：<input type="text" name="name"></p>
+            <p>画像：<input type="file" name="image" accept="image/"></p>
+
+            <button id="add-image" class="add-image">追加</button>
+          </form>
+        </div>
+        <!-- //////↑　Selectタグの設定　↑/////////////// -->
+
+        <div class="aside-content2">
+          <h1 class="rei">例</h1>
+          <p>地域：<input type="text" name="name" value="東京"></p>
+          <p>店名：<input type="text" name="name" value="ふもと赤鶏"></p>
+          <p>備考：<input type="text" name="name" value="炭火焼き鳥屋"></p>
+          <p>画像：<img src="./image/humoto-akadori.jpg" class="lunch-image"></p>
+        </div>
+
+        <div class="aside-content3">
+          <p>＜飯テログルメ＞</p>
+          <!-- <iframe width="280" height="280" src="https://www.youtube.com/embed/TcWmHlJzb80?autoplay=1" title="【飯テロ】さわやかハンバーグ調理映像/静岡のご馳走" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe> -->
+          <iframe class="food-movie" width="280" height="220" src="./movie/sawayaka-hambarg.mp4" muted
+            title="【飯テロ】さわやかハンバーグ調理映像/静岡のご馳走" frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen></iframe>
+          <!-- <canvas id="canvas" width="245" height="135"></canvas> -->
+        </div>
+
+      </aside>
+
+
+      <!-- main コードはここから下 -->
+
+      <main>
+        <div class="area-select">
+          <h1 class="h1-wrap">エリア</h1>
+          <button id="remove-button">
+            選んだお店だけ表示する
+          </button>
+        </div>
+        <div style="width:auto-2vw;height:100vh;overflow:auto;">
+
+          <select id="category" name="category" class="category">
+            <option value="1">東京</option>
+            <option value="2">大阪</option>
+            <option value="3">千葉</option>
+            <option value="4">静岡</option>
+          </select>
+
+
+          <div main-contents1>
+
+            <div class="Tokyo">
+              <section id="Tokyo">
+                <img src="./image/humoto-akadori.jpg" class="food-image">
+
+                <div class="section-contents">
+                  <h1>ふもと赤鶏</h1>
+                  <li>炭火焼き鳥屋さん。</li>
+                  <li>店員さんも明るい</li>
+                  <li>店の雰囲気もSo　Good！</li>
+                  <div class="googlemap埋め込み">
+                    <iframe
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3240.364851504199!2d139.77822031142477!3d35.69263827246941!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x60188ead306ae803%3A0x1fbf7023935af206!2z5L2Q6LOA55yM5LiJ54Cs5p2R44G144KC44Go6LWk6baPIOmmrOWWsOeUuuW6lw!5e0!3m2!1sja!2sjp!4v1686987185797!5m2!1sja!2sjp"
+                      width="300" height="225" style="border:0;" allowfullscreen="" loading="lazy"
+                      referrerpolicy="no-referrer-when-downgrade"></iframe>
+                  </div>
+                </div>
+
+              </section>
+            </div>
+
+            <div class="Tokyo">
+              <section id="Tokyo">
+                <img src="./image/kuzirano-oyado-sasimi.jpg" class="food-image">
+
+                <div class="section-contents">
+                  <h1>くじらのお宿一之谷</h1>
+                  <li>くじらのお刺身が美味しい！</li>
+                  <li>お酒好きには溜まらない☆</li>
+                  <div class="googlemap埋め込み">
+                    <iframe
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3240.460052147761!2d139.76543051142494!3d35.69029497246993!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x60188c01497fec6b%3A0xd1fadef01a78d43a!2z44GP44GY44KJ44Gu44GK5a6_5LiA5LmD6LC3!5e0!3m2!1sja!2sjp!4v1686986945398!5m2!1sja!2sjp"
+                      width="300" height="225" style="border:0;" allowfullscreen="" loading="lazy"
+                      referrerpolicy="no-referrer-when-downgrade"></iframe>
+                  </div>
+
+                </div>
+
+              </section>
+            </div>
+            <div class="Tokyo">
+              <section id="Tokyo">
+                <img src="./image/yakiniku-idadaki-kaityounomakanaimesi.jpg" class="food-image">
+
+                <div class="section-contents">
+                  <h1>いただき</h1>
+                  <li>高級の焼肉屋さん</li>
+                  <li>トリュフ香る会長の賄い飯旨い！</li>
+                  <div class="googlemap埋め込み">
+                    <iframe
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3240.4868770063863!2d139.77978821142472!3d35.68963467247019!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x601889526f8a45cb%3A0x15896d4aa561121a!2z54S86IKJIOOCpOOCv-ODgOOCrSDkurrlvaLnlLo!5e0!3m2!1sja!2sjp!4v1686987469777!5m2!1sja!2sjp"
+                      width="300" height="225" style="border:0;" allowfullscreen="" loading="lazy"
+                      referrerpolicy="no-referrer-when-downgrade"></iframe>
+                  </div>
+
+
+                </div>
+            </div>
+
+            </section>
+          </div>
+
+          <div class="Tokyo">
+            <section id="Tokyo">
+              <img src="./image/paeria-spainryouri.jpg" class="food-image">
+
+              <div class="section-contents">
+                <h1>La Cocina de Gaston</h1>
+                <li>スペイン料理屋さん</li>
+                <li>パエリアが最高です☆</li>
+                <li>元パイロットのスペイン人がいます</li>
+                <div class="googlemap埋め込み">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6481.159267107722!2d139.77086931467056!3d35.687351367289516!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6018895fab973b65%3A0x9ab845dc129b0092!2sLa%20Cocina%20de%20Gaston!5e0!3m2!1sja!2sjp!4v1686987704541!5m2!1sja!2sjp"
+                    width="300" height="225" style="border:0;" allowfullscreen="" loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+              </div>
+
+            </section>
+          </div>
+
+          <div class="Tokyo">
+            <section id="Tokyo">
+              <img src="./image/ravo-riamatta-piza-syasin.jpg" class="food-image">
+
+              <div class="section-contents">
+                <h1>ラ・ヴォーリアマッタ</h1>
+                <li>ピザは石造りの釜戸で焼く</li>
+                <li>ピザは生地が薄くパリパリ☆</li>
+                <li>男性女性問わず人気</li>
+                <div class="googlemap埋め込み"><iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d103676.08639063995!2d139.47579614335942!3d35.70462709999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6018edf757d82f2b%3A0x12f017a00ecfb1ee!2z44Op44O744O044Kp44O844Oq44Ki44Oe44OD44K_IOODq-ODn-ODjeiNu-eqquW6lw!5e0!3m2!1sja!2sjp!4v1686988322839!5m2!1sja!2sjp"
+                    width="300" height="225" style="border:0;" allowfullscreen="" loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+              </div>
+
+            </section>
+          </div>
+
+          <div class="Oosaka">
+            <section>
+              <img src="./image/oosaka-oden-hanakuzira.png" class="food-image">
+
+              <div class="section-contents">
+                <h1>花くじら本店</h1>
+                <li>関西出汁美味しい！</li>
+                <li>凄い人気なので、要予約</li>
+                <li>関西のおでんは美味しい！</li>
+                <div class="googlemap埋め込み"><iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d26243.361595344366!2d135.46646964994935!3d34.69458006697256!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6000e65ff3ceed87%3A0xd27d94a300526313!2z6Iqx44GP44GY44KJIOacrOW6lw!5e0!3m2!1sja!2sjp!4v1687333081529!5m2!1sja!2sjp"
+                    width="300" height="245" style="border:0;" allowfullscreen="" loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+
+            </section>
+          </div>
+
+          <div class="Sizuoka">
+            <section>
+              <img src="./image/sizuoka-uttorisoba.jpg" class="food-image">
+
+              <div class="section-contents">
+                <h1>麺や厨（めんやくりや）</h1>
+                <li>鶏出汁の利いたラーメン</li>
+                <li>”うっ鶏ソバ”は最高の一杯☆</li>
+                <li>マジで味が濃く濃い口の方には人気！</li>
+                <div class="googlemap埋め込み"><iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13074.055020616714!2d138.42250896109735!3d34.993842443582466!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x601a3400d930a8e7%3A0x2c7dd6ff12313a2d!2z6bq644KE5Y6o!5e0!3m2!1sja!2sjp!4v1687091363247!5m2!1sja!2sjp"
+                    width="300" height="235" style="border:0;" allowfullscreen="" loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+              </div>
+
+            </section>
+          </div>
+
+          <div class="Oosaka">
+            <section>
+              <img src="./image/oosaka-sinhotei.webp" class="food-image">
+
+              <div class="section-contents">
+                <h1>しんほてい</h1>
+                <li>完全予約制＆時価の店</li>
+                <li>ふぐ料理堪能できます！</li>
+                <li>鍋の後の締め飯は最高に美味です</li>
+                <div class="googlemap埋め込み"><iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13126.531003706708!2d135.49496773115456!3d34.663976568724145!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6000e76a1f16d32b%3A0xb7c83154cf2d59c7!2z5paw44G744Gm44GE!5e0!3m2!1sja!2sjp!4v1687335726377!5m2!1sja!2sjp"
+                    width="300" height="235" style="border:0;" allowfullscreen="" loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+
+              </div>
+
+            </section>
+          </div>
+
+          <div class="Tiba">
+            <section>
+              <img src="./image/yakiniku-seikouen-Tiba.jpg" class="food-image">
+
+              <div class="section-contents">
+                <h1>聖幸苑</h1>
+                <li>炭火焼き肉</li>
+                <li>比較的安いのに凄く美味しい！</li>
+                <li>認知度低いから穴場です☆</li>
+                <div class="googlemap埋め込み"><iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3236.6633534321268!2d140.0468984!3d35.783645!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x60227f3c62c3b96d%3A0xe26669fb6d01188e!2z6IGW5bm46IuR!5e0!3m2!1sja!2sjp!4v1687335588057!5m2!1sja!2sjp"
+                    width="300" height="225" style="border:0;" allowfullscreen="" loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade">
+                  </iframe></div>
+              </div>
+
+            </section>
+          </div>
+
+          <div class="Sizuoka">
+            <section>
+              <img src="./image/sizuoka-uttorisoba.jpg" class="food-image">
+
+              <div class="section-contents">
+                <h1>麺や厨（めんやくりや）</h1>
+                <li>鶏出汁の利いたラーメン</li>
+                <li>”うっ鶏ソバ”は最高の一杯☆</li>
+                <li>マジで味が濃く濃い口の方には人気！</li>
+                <div class="googlemap埋め込み"><iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13074.055020616714!2d138.42250896109735!3d34.993842443582466!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x601a3400d930a8e7%3A0x2c7dd6ff12313a2d!2z6bq644KE5Y6o!5e0!3m2!1sja!2sjp!4v1687091363247!5m2!1sja!2sjp"
+                    width="300" height="235" style="border:0;" allowfullscreen="" loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+              </div>
+
+            </section>
+          </div>
+
+        </div>
+      </main>
+    </div>
+
+
+  </div>
+  <!-- <script defer src="js/index.js"></script> -->
+
+</body>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- <script src="js/filter.js" defer></script> -->
+
+</html>

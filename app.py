@@ -51,6 +51,12 @@ def search_root():
     api_key = os.getenv("GOOGLE_MAPS_API_KEY")
     return render_template("search_root.html", api_key=api_key)
 
+@app.route("/restaurant")
+def search_restaurant():
+    api_key = os.getenv("GOOGLE_MAPS_API_KEY")
+    return render_template("restaurant.html", api_key=api_key)
+
+
 @login_required
 @login_manager.unauthorized_handler
 def index():
